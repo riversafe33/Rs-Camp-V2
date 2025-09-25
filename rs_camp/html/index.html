@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .nui {
+            position: fixed;
+            bottom: 36px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.9);
+            border: 2px solid #916b3abe;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            max-width: 300px;
+            color: #916b3abe;
+            text-align: right;
+            display: none;
+            overflow: auto;
+        }
+
+        .nui h4 {
+            margin: 0 0 10px;
+            font-size: 26px;
+            color: #916b3abe;
+            text-align: left;
+        }
+
+        .nui p {
+            margin: 5px 0;
+            font-size: 20px;
+            text-align: left;
+        }
+
+        .target-status {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: transparent;
+            color: #00ff00;
+            font-size: 22px;
+            font-weight: bold;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="nui" id="controlPanel">
+        <h4 id="panelTitle"></h4>
+        <div id="panelControls"></div>
+    </div>
+
+    <div class="target-status" id="targetStatus"></div>
+
+    <script>
+        window.addEventListener('message', function(event) {
+            const controlPanel = document.getElementById('controlPanel');
+            const panelTitle = document.getElementById('panelTitle');
+            const panelControls = document.getElementById('panelControls');
+            const targetStatus = document.getElementById('targetStatus');
+
+            if (event.data.action === "showcamp") {
+                controlPanel.style.display = 'block';
+                panelTitle.textContent = event.data.title;
+                panelControls.innerHTML = "";
+                if (event.data.controls && Array.isArray(event.data.controls)) {
+                    event.data.controls.forEach(ctrl => {
+                        const p = document.createElement('p');
+                        p.textContent = ctrl;
+                        panelControls.appendChild(p);
+                    });
+                }
+            } else if (event.data.action === "hidecamp") {
+                controlPanel.style.display = 'none';
+            }
+
+            if (event.data.action === "showtarget") {
+                targetStatus.style.display = 'block';
+                targetStatus.textContent = event.data.text;
+            } else if (event.data.action === "hidetarget") {
+                targetStatus.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

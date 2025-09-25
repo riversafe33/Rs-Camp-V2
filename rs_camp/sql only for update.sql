@@ -1,0 +1,1 @@
+ALTER TABLE rs_camp ADD COLUMN shared_with TEXT DEFAULT '[]';

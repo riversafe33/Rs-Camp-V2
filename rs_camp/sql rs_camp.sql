@@ -1,0 +1,36 @@
+CREATE TABLE IF NOT EXISTS `rs_camp` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `owner_identifier` varchar(255) DEFAULT NULL,
+  `owner_charid` int(11) DEFAULT NULL,
+  `x` double DEFAULT NULL,
+  `y` double DEFAULT NULL,
+  `z` double DEFAULT NULL,
+  `rot_x` double DEFAULT NULL,
+  `rot_y` double DEFAULT NULL,
+  `rot_z` double DEFAULT NULL,
+  `item_name` varchar(50) DEFAULT NULL,
+  `item_model` varchar(100) DEFAULT NULL,
+  `shared_with` text DEFAULT '[]',
+  PRIMARY KEY (`id`)
+);
+
+INSERT IGNORE INTO `items` (`item`, `label`, `limit`, `can_remove`, `type`, `usable`, `metadata`, `desc`, `weight`) VALUES
+('chest_little', 'Chest 1', 200, 1, 'item_standard', 1, '{}', 'A chest to store things', 0.1),
+('chest_medium', 'Chest 2', 200, 1, 'item_standard', 1, '{}', 'A chest to store things', 0.1),
+('chest_big', 'Chest 3', 200, 1, 'item_standard', 1, '{}', 'A chest to store things', 0.1),
+("tent_bounty07", "Bounty Tent 1", 200, 1, "item_standard", 1, "{}", "A tent for camping", 0.1),
+("tent_bounty02", "Bounty Tent 2", 200, 1, "item_standard", 1, "{}", "A tent for camping", 0.1),
+("tent_bounty06", "Bounty Tent 3", 200, 1, "item_standard", 1, "{}", "A tent for camping", 0.1),
+("tent_collector04", "Collector Tent", 200, 1, "item_standard", 1, "{}", "A tent for camping", 0.1),
+("tent_trader", "Trader's tent", 200, 1, "item_standard", 1, "{}", "A tent for camping", 0.1),
+('hitchingpost_wood', 'Hitch post wood', 200, 1, 'item_standard', 1, '{}', 'Used to tie the horse', 0.1),
+('hitchingpost_iron', 'Hitch post iron', 200, 1, 'item_standard', 1, '{}', 'Used to tie the horse', 0.1),
+('hitchingpost_wood_double', 'Hitch post double', 200, 1, 'item_standard', 1, '{}', 'Used to tie the horse', 0.1),
+('chair_wood', 'Chair 1', 200, 1, 'item_standard', 1, '{}', 'It is used to sit', 0.1),
+('table_wood01', 'Table 1', 200, 1, 'item_standard', 1, '{}', 'A wooden table', 0.1),
+('campfire_01', 'Campfire 1', 200, 1, 'item_standard', 1, '{}', 'Se utiliza para cocinar o calentar.', 0.1),
+('campfire_02', 'Campfire 2', 200, 1, 'item_standard', 1, '{}', 'Se utiliza para cocinar o calentar.', 0.1),
+('door_01', 'Door 1', 200, 1, 'item_standard', 1, '{}', 'A Door', 0.1),
+('door_02', 'Door 2', 200, 1, 'item_standard', 1, '{}', 'A Door', 0.1),
+('door_03', 'Door 3', 200, 1, 'item_standard', 1, '{}', 'A Door', 0.1),
+('door_04', 'Door 4', 200, 1, 'item_standard', 1, '{}', 'A Door', 0.1);
