@@ -1,4 +1,4 @@
-To improve my PC and continue offering things: https://ko-fi.com/riversafe33
+To improve my PC and continue offering free scripts: https://ko-fi.com/riversafe33
 
 Dependency
 
