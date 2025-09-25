@@ -4,7 +4,7 @@ Dependency
 
 https://github.com/riversafe33/uiprompt
 
-If you use version one, use SQL only for update so that objects already placed are not deleted.
+# If you use version one, use [ SQL only for update ] so that objects already placed are not deleted.
 
 1 - Added the ability to place doors. These can only be opened by the owner, or shared with friends using a command. The command is configurable in the config file.
 
