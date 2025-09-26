@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>Camp Controls</title>
     <style>
         body {
             margin: 0;
@@ -73,12 +73,19 @@
                 controlPanel.style.display = 'block';
                 panelTitle.textContent = event.data.title;
                 panelControls.innerHTML = "";
+
                 if (event.data.controls && Array.isArray(event.data.controls)) {
                     event.data.controls.forEach(ctrl => {
                         const p = document.createElement('p');
                         p.textContent = ctrl;
                         panelControls.appendChild(p);
                     });
+                }
+
+                if (event.data.speed !== undefined) {
+                    const speedInfo = document.createElement('p');
+                    speedInfo.textContent = event.data.speed; // ← no convertir a número
+                    panelControls.appendChild(speedInfo);
                 }
             } else if (event.data.action === "hidecamp") {
                 controlPanel.style.display = 'none';
@@ -92,5 +99,6 @@
             }
         });
     </script>
+
 </body>
 </html>
