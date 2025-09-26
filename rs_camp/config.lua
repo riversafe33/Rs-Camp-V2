@@ -49,7 +49,7 @@ Config.Text = {
 Config.ControlsPanel = {
     title = "Controls",
     controls = {
-        "[Mouse Scroll (+ / -)] - Adjust Speed",
+        "[Mouse Scroll] - Adjust Speed",
         "[← ↑ ↓ →] - Move object",
         "[1/2]     - Rotate Z",
         "[3/4]     - Rotate X",
