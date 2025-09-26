@@ -92,8 +92,8 @@ Config.Keys = {
     placeOnGround  = 0xB2F377E8, -- F
     cancelPlace    = 0x760A9C6F, -- G
     confirmPlace   = 0xC7B5340A, -- ENTER
-    increaseSpeed = 0xCC1075A7, -- MWSCROLLUP
-    decreaseSpeed = 0xFD0F0C2C, -- MWSCROLLDOWN
+    increaseSpeed = 0xCC1075A7, -- MSCROLLUP
+    decreaseSpeed = 0xFD0F0C2C, -- MSCROLLDOWN
 }
 
 Config.Chests = {
