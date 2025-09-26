@@ -43,11 +43,13 @@ Config.Text = {
     Door = "Door",
     Dontdoor = "You do not have access to this door",
     Perms = "Permissions",
+    SpeedLabel = "Speed",
 }
 
 Config.ControlsPanel = {
     title = "Controls",
     controls = {
+        "[Mouse Scroll (+ / -)] - Adjust Speed",
         "[← ↑ ↓ →] - Move object",
         "[1/2]     - Rotate Z",
         "[3/4]     - Rotate X",
@@ -55,10 +57,10 @@ Config.ControlsPanel = {
         "[7/8]     - Move Up/Down",
         "[ENTER]   - Confirm Position",
         "[G]       - Cancel Placement",
-        "[J]       - Adjust Speed",
         "[F]       - Place on Ground",
     }
 }
+
 
 Config.Promp = {
     Collect = "Pickut",
@@ -88,9 +90,10 @@ Config.Keys = {
     moveUp         = 0xB03A913B, -- 7
     moveDown       = 0x42385422, -- 8
     placeOnGround  = 0xB2F377E8, -- F
-    changeSpeed    = 0xF3830D8E, -- J
     cancelPlace    = 0x760A9C6F, -- G
     confirmPlace   = 0xC7B5340A, -- ENTER
+    increaseSpeed = 0xCC1075A7, -- MWSCROLLUP
+    decreaseSpeed = 0xFD0F0C2C, -- MWSCROLLDOWN
 }
 
 Config.Chests = {
