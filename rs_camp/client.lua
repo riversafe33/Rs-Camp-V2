@@ -437,7 +437,6 @@ AddEventHandler('rs_camp:client:placePropCamp', function(itemName)
                 end
             end
 
-            -- Scroll arriba o tecla de aumentar velocidad
             if IsDisabledControlJustPressed(0, Config.Keys.increaseSpeed) then
                 posStep = math.min(posStep + 0.01, 5.0)
                 rotStep = posStep * 10
@@ -449,7 +448,6 @@ AddEventHandler('rs_camp:client:placePropCamp', function(itemName)
                 })
             end
 
-            -- Scroll abajo o tecla de disminuir velocidad
             if IsDisabledControlJustPressed(0, Config.Keys.decreaseSpeed) then
                 posStep = math.max(posStep - 0.01, 0.01)
                 rotStep = posStep * 10
