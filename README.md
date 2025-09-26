@@ -16,11 +16,11 @@ https://github.com/riversafe33/uiprompt
 
 5 - The issue where some objects weren't recognized for deletion has been resolved
 
-![1](https://github.com/user-attachments/assets/fd311ec0-5655-48be-ae8d-8c657c29965d)
+6 - Now the adjustment speed is changed with the Mouse Scroll instead of the input, and it's visible in the NUI. Replace client.lua, config.lua, and html.html.
 
-![2](https://github.com/user-attachments/assets/049cc468-5583-44e9-bd6a-e0df486ac0a7)
+![1](https://github.com/user-attachments/assets/9321d729-a012-4019-9a9c-14d40c5ae75c)
 
-![3](https://github.com/user-attachments/assets/57f750a2-29e5-434a-a86a-bf6e2e5e1c68)
+![2](https://github.com/user-attachments/assets/ee63b351-712a-4125-8979-beb62bff7d87)
 
 ![4](https://github.com/user-attachments/assets/838b2c34-9f3a-4299-8299-65c7bb7dd7ac)
 
