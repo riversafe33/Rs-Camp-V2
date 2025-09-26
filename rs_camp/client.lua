@@ -372,21 +372,17 @@ AddEventHandler('rs_camp:client:placePropCamp', function(itemName)
 
     local modelName = Config.Items[itemName].model
     local modelHash = loadModelHash(modelName)
-    if not modelHash then
-        return
-    end
+    if not modelHash then return end
 
     local playerPed = PlayerPedId()
     local px, py, pz = table.unpack(GetEntityCoords(playerPed, true))
     local ox, oy, oz = table.unpack(GetOffsetFromEntityInWorldCoords(playerPed, 0.0, 4.0, 0.0))
 
     local tempObj = safeCreateObject(modelHash, ox, oy, oz)
-    if not tempObj then
-        return
-    end
+    if not tempObj then return end
 
     local posStep = 0.1
-    local rotStep = 5
+    local rotStep = posStep * 10
 
     SetEntityCoords(tempObj, ox, oy, oz, false, false, false, false)
     FreezeEntityPosition(tempObj, true)
@@ -397,11 +393,15 @@ AddEventHandler('rs_camp:client:placePropCamp', function(itemName)
 
     lastPlacedCamp = {entity = tempObj, coords = vector3(ox, oy, oz), rotation = vector3(0,0,0), model = modelName}
 
-    SendNUIMessage({ action = "showcamp", title = Config.ControlsPanel.title, controls = Config.ControlsPanel.controls })
+    SendNUIMessage({
+        action = "showcamp",
+        title = Config.ControlsPanel.title,
+        controls = Config.ControlsPanel.controls,
+        speed = Config.Text.SpeedLabel .. ": " .. string.format("%.2f", posStep)
+    })
 
     local posX, posY, posZ = ox, oy, oz
     local rotX, rotY, rotZ = 0.0, 0.0, 0.0
-    local posStep, rotStep = 0.1, 5
     local isPlacing = true
 
     CreateThread(function()
@@ -437,35 +437,33 @@ AddEventHandler('rs_camp:client:placePropCamp', function(itemName)
                 end
             end
 
+            -- Scroll arriba o tecla de aumentar velocidad
+            if IsDisabledControlJustPressed(0, Config.Keys.increaseSpeed) then
+                posStep = math.min(posStep + 0.01, 5.0)
+                rotStep = posStep * 10
+                SendNUIMessage({
+                    action = "showcamp",
+                    title = Config.ControlsPanel.title,
+                    controls = Config.ControlsPanel.controls,
+                    speed = Config.Text.SpeedLabel .. ": " .. string.format("%.2f", posStep)
+                })
+            end
+
+            -- Scroll abajo o tecla de disminuir velocidad
+            if IsDisabledControlJustPressed(0, Config.Keys.decreaseSpeed) then
+                posStep = math.max(posStep - 0.01, 0.01)
+                rotStep = posStep * 10
+                SendNUIMessage({
+                    action = "showcamp",
+                    title = Config.ControlsPanel.title,
+                    controls = Config.ControlsPanel.controls,
+                    speed = Config.Text.SpeedLabel .. ": " .. string.format("%.2f", posStep)
+                })
+            end
+
             if moved then
                 SetEntityCoords(tempObj, posX, posY, posZ, true, true, true, false)
                 SetEntityRotation(tempObj, rotX, rotY, rotZ, 2, true)
-            end
-
-            if IsDisabledControlJustPressed(0, Config.Keys.changeSpeed) then
-                local myInput = {
-                    type = "enableinput",
-                    inputType = "input",
-                    button = Config.Input.Confirm,
-                    placeholder = Config.Input.MinMax,
-                    style = "block",
-                    attributes = {
-                        inputHeader = Config.Input.Speed,
-                        type = "text",
-                        pattern = "[0-9.]+",
-                        title = Config.Input.Change,
-                        style = "border-radius: 10px; background-color: ; border:none;"
-                    }
-                }
-
-                local result = exports.vorp_inputs:advancedInput(myInput)
-                if result and result ~= "" then
-                    local testint = tonumber(result)
-                    if testint and testint ~= 0 then
-                        posStep = math.max(0.01, math.min(testint, 5))
-                        rotStep = math.max(0.01, math.min(testint * 10, 360))  
-                    end
-                end
             end
 
             if IsDisabledControlJustPressed(0, Config.Keys.confirmPlace) then
