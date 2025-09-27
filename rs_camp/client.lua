@@ -119,10 +119,11 @@ local function RemoveVegModifierSphere(sphere, p1)
     return Citizen.InvokeNative(0x9CF1836C03FB67A2, Citizen.PointerValueIntInitialized(sphere), p1)
 end
 
-RegisterNetEvent('rs_camp:client:spawnCamps') 
-AddEventHandler('rs_camp:client:spawnCamps',  function(data) 
-    local uniqueId = data.id if not uniqueId then return end 
-    campsData[uniqueId] = data 
+RegisterNetEvent('rs_camp:client:spawnCamps')
+AddEventHandler('rs_camp:client:spawnCamps', function(data)
+    local uniqueId = data.id
+    if not uniqueId then return end
+    campsData[uniqueId] = data
 end)
 
 CreateThread(function()
