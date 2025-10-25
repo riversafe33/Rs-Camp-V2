@@ -555,3 +555,23 @@ Citizen.CreateThread(function()
         { name = Config.Text.Corret, help = Config.Text.Corret }
     })
 end)
+
+AddEventHandler('onResourceStop', function(resourceName)
+    if resourceName ~= GetCurrentResourceName() then return end
+
+    for uniqueId, _ in pairs(campsEntities) do
+        if campVegSpheres[uniqueId] then
+            RemoveVegModifierSphere(campVegSpheres[uniqueId], 0)
+            campVegSpheres[uniqueId] = nil
+        end
+
+        local entity = campsEntities[uniqueId]
+        if entity and DoesEntityExist(entity) then
+            DeleteEntity(entity)
+        end
+
+        campsEntities[uniqueId] = nil
+        campsData[uniqueId] = nil
+        dynamicDoors[uniqueId] = nil
+    end
+end)
