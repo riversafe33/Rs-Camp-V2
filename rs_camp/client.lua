@@ -2,7 +2,6 @@ local campsEntities = {}
 local dynamicDoors = {}
 local campsData = {}
 local doorStates = {}
-local campVegSpheres = {}
 local renderDistance = Config.RenderDistace
 local closestDoorEntity, closestDoorId = nil, nil
 local closestCampEntity, closestCampId = nil, nil
@@ -121,74 +120,69 @@ end
 
 RegisterNetEvent('rs_camp:client:spawnCamps')
 AddEventHandler('rs_camp:client:spawnCamps', function(data)
-    local uniqueId = data.id
-    if not uniqueId then return end
-    campsData[uniqueId] = data
+    campsData[data.id] = data
 end)
 
 CreateThread(function()
     while true do
-        local playerCoords = GetEntityCoords(PlayerPedId())
+        local playerPed = PlayerPedId()
+        local playerCoords = GetEntityCoords(playerPed)
         local activeCamps = {}
 
-        for uniqueId, data in pairs(campsData) do
+        for id, data in pairs(campsData) do
             local pos = vector3(data.x, data.y, data.z)
             local dist = #(playerCoords - pos)
 
-            if dist < renderDistance then
-                if not campsEntities[uniqueId] then
-                    local modelName = data.item and data.item.model
-                    if modelName then
-                        local modelHash = loadModelHash(modelName)
-                        if modelHash then
-                            local object = safeCreateObject(modelHash, data.x, data.y, data.z)
-                            if object then
-                                SetEntityRotation(object,
-                                    tonumber(data.rotation.x or 0.0) % 360.0,
-                                    tonumber(data.rotation.y or 0.0) % 360.0,
-                                    tonumber(data.rotation.z or 0.0) % 360.0,
-                                    2, true
-                                )
-                                FreezeEntityPosition(object, true)
-                                SetEntityAsMissionEntity(object, true)
-                                campsEntities[uniqueId] = object
+            if dist < renderDistance and not campsEntities[id] then
+                local modelHash = loadModelHash(data.item.model)
+                local object = safeCreateObject(modelHash, data.x, data.y, data.z)
 
-                                for key, item in pairs(Config.Items or {}) do
-                                    if item.model == modelName and item.veg then
-                                        ActiveVegZones[uniqueId] = AddVegModifierSphere(data.x, data.y, data.z, item.veg)
-                                        break
-                                    end
-                                end
+                SetEntityRotation(object,
+                    tonumber(data.rotation.x or 0.0) % 360.0,
+                    tonumber(data.rotation.y or 0.0) % 360.0,
+                    tonumber(data.rotation.z or 0.0) % 360.0
+                )
+                FreezeEntityPosition(object, true)
+                SetEntityAsMissionEntity(object, true)
 
-                                for _, door in pairs(Config.Doors or {}) do
-                                    if door.modelDoor == modelName then
-                                        dynamicDoors[uniqueId] = GetHashKey(modelName)
-                                        break
-                                    end
-                                end
-                            end
-                        end
+                campsEntities[id] = object
+
+                for _, item in pairs(Config.Items or {}) do
+                    if item.model == data.item.model and item.veg then
+                        ActiveVegZones[id] = AddVegModifierSphere(data.x, data.y, data.z, item.veg)
+                        break
                     end
                 end
-                activeCamps[uniqueId] = true
+
+                local modelName = data.item.model
+                for _, door in pairs(Config.Doors or {}) do
+                    if door.modelDoor == modelName then
+                        dynamicDoors[id] = GetHashKey(modelName)
+                        break
+                    end
+                end
             end
 
-            if dist > renderDistance and campsEntities[uniqueId] then
-                DeleteEntity(campsEntities[uniqueId])
-                campsEntities[uniqueId] = nil
-                dynamicDoors[uniqueId] = nil
+            if dist > renderDistance and campsEntities[id] then
+                DeleteEntity(campsEntities[id])
+                campsEntities[id] = nil
 
-                if ActiveVegZones[uniqueId] then
-                    RemoveVegModifierSphere(ActiveVegZones[uniqueId], 0)
-                    ActiveVegZones[uniqueId] = nil
+                if ActiveVegZones[id] then
+                    RemoveVegModifierSphere(ActiveVegZones[id], 0)
+                    ActiveVegZones[id] = nil
                 end
+                dynamicDoors[id] = nil
+            end
+
+            if dist < renderDistance then
+                activeCamps[id] = true
             end
         end
 
-        for uniqueId, sphere in pairs(ActiveVegZones) do
-            if not activeCamps[uniqueId] then
+        for id, sphere in pairs(ActiveVegZones) do
+            if not activeCamps[id] then
                 RemoveVegModifierSphere(sphere, 0)
-                ActiveVegZones[uniqueId] = nil
+                ActiveVegZones[id] = nil
             end
         end
 
@@ -196,12 +190,13 @@ CreateThread(function()
     end
 end)
 
+
 RegisterNetEvent('rs_camp:client:removeCamp')
 AddEventHandler('rs_camp:client:removeCamp', function(uniqueId)
 
-    if campVegSpheres[uniqueId] then
-        RemoveVegModifierSphere(campVegSpheres[uniqueId], 0)
-        campVegSpheres[uniqueId] = nil
+    if ActiveVegZones[uniqueId] then
+        RemoveVegModifierSphere(ActiveVegZones[uniqueId], 0)
+        ActiveVegZones[uniqueId] = nil
     end
 
     local entity = campsEntities[uniqueId]
@@ -560,9 +555,10 @@ AddEventHandler('onResourceStop', function(resourceName)
     if resourceName ~= GetCurrentResourceName() then return end
 
     for uniqueId, _ in pairs(campsEntities) do
-        if campVegSpheres[uniqueId] then
-            RemoveVegModifierSphere(campVegSpheres[uniqueId], 0)
-            campVegSpheres[uniqueId] = nil
+
+        if ActiveVegZones[uniqueId] then
+            RemoveVegModifierSphere(ActiveVegZones[uniqueId], 0)
+            ActiveVegZones[uniqueId] = nil
         end
 
         local entity = campsEntities[uniqueId]
