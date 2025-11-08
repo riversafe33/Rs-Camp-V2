@@ -321,13 +321,56 @@ RegisterCommand(Config.Commands.Unshareperms, function(source, args, rawCommand)
     end)
 end, false)
 
+local MAX_ITEMS_PER_PLAYER = Config.MaxObject
+
 for itemName, itemData in pairs(Config.Items) do
     VorpInv.RegisterUsableItem(itemName, function(data)
         local src = data.source
-        VorpInv.CloseInv(src)
-        TriggerClientEvent("rs_camp:client:placePropCamp", src, itemName)
+        local User = VORPcore.getUser(src)
+        if not User then return end
+
+        local Character = User.getUsedCharacter
+        if not Character then return end
+
+        TriggerClientEvent('rs_camp:client:sendTownToServer', src, itemName)
     end)
 end
+
+RegisterNetEvent('rs_camp:server:checkTownAndPlace', function(itemName, town)
+    local src = source
+    local User = VORPcore.getUser(src)
+    if not User then return end
+
+    local Character = User.getUsedCharacter
+    if not Character then return end
+
+    local allowed = Config.AllowedTowns[town]
+    if allowed == false then
+        VorpInv.CloseInv(src)
+        VORPcore.NotifySimpleTop(src, Config.Text.Camp, Config.Text.NotInTown, 4000)
+        return
+    end
+
+    exports.oxmysql:execute(
+        'SELECT COUNT(*) as count FROM rs_camp WHERE owner_identifier = @identifier AND owner_charid = @charid',
+        {
+            ['@identifier'] = Character.identifier,
+            ['@charid'] = Character.charIdentifier
+        },
+        function(result)
+            local count = result[1] and result[1].count or 0
+
+            if count >= MAX_ITEMS_PER_PLAYER then
+                VorpInv.CloseInv(src)
+                VORPcore.NotifySimpleTop(src, Config.Text.Camp, Config.Text.MaxItems, 4000)
+                return
+            end
+
+            VorpInv.CloseInv(src)
+            TriggerClientEvent("rs_camp:client:placePropCamp", src, itemName)
+        end
+    )
+end)
 
 RegisterNetEvent("rs_camp:removeItem", function(itemName)
     local src = source
