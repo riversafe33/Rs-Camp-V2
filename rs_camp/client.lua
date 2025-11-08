@@ -551,6 +551,29 @@ Citizen.CreateThread(function()
     })
 end)
 
+function GetCurentTownName()
+    local pedCoords = GetEntityCoords(PlayerPedId())
+    local town_hash = Citizen.InvokeNative(0x43AD8FC02B429D33, pedCoords, 1)
+
+    local townNames = {
+        [GetHashKey("Annesburg")] = "Annesburg",
+        [GetHashKey("Armadillo")] = "Armadillo",
+        [GetHashKey("Blackwater")] = "Blackwater",
+        [GetHashKey("Rhodes")] = "Rhodes",
+        [GetHashKey("StDenis")] = "StDenis",
+        [GetHashKey("Strawberry")] = "Strawberry",
+        [GetHashKey("Tumbleweed")] = "Tumbleweed",
+        [GetHashKey("Valentine")] = "Valentine"
+    }
+
+    return townNames[town_hash]
+end
+
+RegisterNetEvent('rs_camp:client:sendTownToServer', function(itemName)
+    local town = GetCurentTownName()
+    TriggerServerEvent('rs_camp:server:checkTownAndPlace', itemName, town)
+end)
+
 AddEventHandler('onResourceStop', function(resourceName)
     if resourceName ~= GetCurrentResourceName() then return end
 
