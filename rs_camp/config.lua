@@ -1,6 +1,20 @@
 Config = {}
 
 Config.RenderDistace = 100.0       -- Distance at which objects fade away when moving away
+Config.MaxObject = 100             -- Maximum number of items allowed per player
+
+Config.AllowedTowns = {
+    -- = false → not allowed to place objects inside this town
+    -- = true  → allowed to place objects inside this town
+    ["Annesburg"] = true,  
+    ["Armadillo"] = true,
+    ["Blackwater"] = true,
+    ["Rhodes"] = true,
+    ["StDenis"] = true,
+    ["Strawberry"] = true,
+    ["Tumbleweed"] = true,
+    ["Valentine"] = true
+}
 
 Config.Commands = {
     Camp = "camp",                 -- Command to activate the target and collect the camp props
