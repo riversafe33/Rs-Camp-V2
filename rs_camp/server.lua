@@ -4,14 +4,14 @@ local Inv = exports.vorp_inventory
 local loadedCamps = {}
 
 local function registerStorage(prefix, name, limit)
-    local isInvRegistered <const> = Inv:isCustomInventoryRegistered(prefix)
+    local isInvRegistered = Inv:isCustomInventoryRegistered(prefix)
     if not isInvRegistered then
-        local data <const> = {
+        local data = {
             id = prefix,
             name = name,
             limit = limit,
             acceptWeapons = true,
-            shared = false,
+            shared = true,
             ignoreItemStackLimit = true,
             whitelistItems = false,
             UsePermissions = false,
