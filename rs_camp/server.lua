@@ -4,9 +4,9 @@ local Inv = exports.vorp_inventory
 local loadedCamps = {}
 
 local function registerStorage(prefix, name, limit)
-    local isInvRegistered = Inv:isCustomInventoryRegistered(prefix)
+    local isInvRegistered <const> = Inv:isCustomInventoryRegistered(prefix)
     if not isInvRegistered then
-        local data = {
+        local data <const> = {
             id = prefix,
             name = name,
             limit = limit,
@@ -114,42 +114,86 @@ AddEventHandler('rs_camp:server:pickUpByOwner', function(uniqueId)
 
     local u_identifier = Character.identifier
     local u_charid = Character.charIdentifier
+    local characterGroup = Character.group
 
-    exports.oxmysql:execute(
-        'SELECT * FROM rs_camp WHERE id = ? AND owner_identifier = ? AND owner_charid = ?',
-        {uniqueId, u_identifier, u_charid},
-        function(results)
-            if results and #results > 0 then
-                local row = results[1]
+    local function IsAuthorizedGroup(group)
+        for _, allowedGroup in ipairs(Config.AdminGroups) do
+            if group == allowedGroup then return true end
+        end
+        return false
+    end
 
-                TriggerClientEvent('rs_camp:client:removeCamp', -1, uniqueId)
-
-                for i, camp in ipairs(loadedCamps) do
-                    if camp.id == uniqueId then
-                        table.remove(loadedCamps, i)
-                        break
-                    end
-                end
-
-                exports.oxmysql:execute(
-                    'DELETE FROM rs_camp WHERE id = ?',
-                    {uniqueId},
-                    function(result)
-                        local affected = result and (result.affectedRows or result.affected_rows or result.changes)
-                        if affected and affected > 0 then
-                            if row.item_name then
-                                VorpInv.addItem(src, row.item_name, 1)
-                            end
-
-                            VORPcore.NotifyLeft(src, Config.Text.Camp, Config.Text.Picked, "generic_textures", "tick", 4000, "COLOR_GREEN")
-                        end
-                    end
-                )
-            else
-                VORPcore.NotifyLeft(src, Config.Text.Camp, Config.Text.Dont, "menu_textures", "cross", 3000, "COLOR_RED")
+    local function IsChest(objectModel)
+        for _, chest in ipairs(Config.Chests) do
+            if chest.object == objectModel then
+                return true
             end
         end
-    )
+        return false
+    end
+
+    local function RemoveCamp(row)
+        TriggerClientEvent('rs_camp:client:removeCamp', -1, uniqueId)
+
+        for i, camp in ipairs(loadedCamps) do
+            if camp.id == uniqueId then
+                table.remove(loadedCamps, i)
+                break
+            end
+        end
+
+        exports.oxmysql:execute(
+            'DELETE FROM rs_camp WHERE id = ?',
+            {uniqueId},
+            function(result)
+                local affected = result and (result.affectedRows or result.affected_rows or result.changes)
+                if affected and affected > 0 then
+                    if row.item_name then
+                        VorpInv.addItem(src, row.item_name, 1)
+                    end
+                    VORPcore.NotifyLeft(src, Config.Text.Camp, Config.Text.Picked, "generic_textures", "tick", 4000, "COLOR_GREEN")
+                end
+            end
+        )
+    end
+
+    exports.oxmysql:execute('SELECT * FROM rs_camp WHERE id = ?', {uniqueId}, function(results)
+        if not results or #results == 0 then
+            VORPcore.NotifyLeft(src, Config.Text.Camp, Config.Text.Dont, "menu_textures", "cross", 3000, "COLOR_RED")
+            return
+        end
+
+        local row = results[1]
+
+        if not ((row.owner_identifier == u_identifier and row.owner_charid == u_charid) or IsAuthorizedGroup(characterGroup)) then
+            VORPcore.NotifyLeft(src, Config.Text.Camp, Config.Text.Dont, "menu_textures", "cross", 3000, "COLOR_RED")
+            return
+        end
+
+        if not IsChest(row.item_model) then
+            RemoveCamp(row)
+            return
+        end
+
+        local invID = "camp_storage_" .. uniqueId
+
+        if exports.vorp_inventory:isCustomInventoryRegistered(invID) then
+            exports.vorp_inventory:getCustomInventoryItems(invID, function(items)
+                exports.vorp_inventory:getCustomInventoryWeapons(invID, function(weapons)
+                    items = items or {}
+                    weapons = weapons or {}
+
+                    if #items > 0 or #weapons > 0 then
+                        VORPcore.NotifyLeft(src, Config.Text.Camp, Config.Text.chestfull, "menu_textures", "cross", 3000, "COLOR_RED")
+                    else
+                        RemoveCamp(row)
+                    end
+                end)
+            end)
+        else
+            RemoveCamp(row)
+        end
+    end)
 end)
 
 RegisterNetEvent('rs_camp:server:openChest')
@@ -167,7 +211,7 @@ AddEventHandler('rs_camp:server:openChest', function(campId)
             if row.owner_identifier == Character.identifier and row.owner_charid == Character.charIdentifier then
                 hasAccess = true
             else
-                local sharedWith = json.decode(row.shared_with) or {}
+                local sharedWith = json.decode(row.shared_with or "[]")
                 for _, data in ipairs(sharedWith) do
                     if data and data.charIdentifier == Character.charIdentifier then
                         hasAccess = true
@@ -195,6 +239,7 @@ AddEventHandler('rs_camp:server:openChest', function(campId)
         end
     end)
 end)
+
 
 RegisterNetEvent('rs_camp:server:toggleDoor')
 AddEventHandler('rs_camp:server:toggleDoor', function(campId)
