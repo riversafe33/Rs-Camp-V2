@@ -58,6 +58,16 @@ Config.Text = {
     Dontdoor = "You do not have access to this door",
     Perms = "Permissions",
     SpeedLabel = "Speed",
+	-- new notification
+	NotInTown = "You cannot place objects inside this town",
+    MaxItems = "You have reached the maximum allowed objects",
+    chestfull = "¡No puedes recoger el chest, primero vacíalo!",
+}
+
+Config.AdminGroups = { -- Permissions to remove objects
+    "admin",
+    "moderator",
+    -- add more here
 }
 
 Config.ControlsPanel = {
