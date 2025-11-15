@@ -22,13 +22,6 @@ Config.Commands = {
     Unshareperms = "unshareperm",  -- Command to remove access to chests or door
 }
 
-Config.Input = {
-    Confirm = "Confirm",
-    MinMax = "0.01 to 5",
-    Change = "Only numbers between 0.01 and 5 are allowed",
-    Speed = "Change speed",
-}
-
 Config.Text = {
     StorageName = "Storage",
     Chest = "Chest",
