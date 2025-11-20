@@ -134,7 +134,15 @@ CreateThread(function()
                 end
             end
 
-            if dist > renderDistance and campsEntities[id] then
+            local isDoor = false
+            for _, door in pairs(Config.Doors or {}) do
+                if door.modelDoor == data.item.model then
+                    isDoor = true
+                    break
+                end
+            end
+
+            if dist > renderDistance and campsEntities[id] and not isDoor then
                 DeleteEntity(campsEntities[id])
                 campsEntities[id] = nil
 
