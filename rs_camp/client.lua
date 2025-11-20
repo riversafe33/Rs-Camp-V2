@@ -105,7 +105,16 @@ CreateThread(function()
 
             if dist < renderDistance and not campsEntities[id] then
                 local modelHash = GetHashKey(data.item.model)
-                local object = CreateObjectNoOffset(modelHash, data.x, data.y, data.z, true, true, true)
+                local isDynamic = false
+                local modelName = data.item.model
+                for _, door in pairs(Config.Doors or {}) do
+                    if door.modelDoor == modelName then
+                        isDynamic = true
+                        dynamicDoors[id] = GetHashKey(modelName)
+                        break
+                    end
+                end
+                local object = CreateObjectNoOffset(modelHash, data.x, data.y, data.z, false, false, isDynamic)
 
                 SetEntityRotation(object,
                     tonumber(data.rotation.x or 0.0) % 360.0,
@@ -120,14 +129,6 @@ CreateThread(function()
                 for _, item in pairs(Config.Items or {}) do
                     if item.model == data.item.model and item.veg then
                         ActiveVegZones[id] = AddVegModifierSphere(data.x, data.y, data.z, item.veg)
-                        break
-                    end
-                end
-
-                local modelName = data.item.model
-                for _, door in pairs(Config.Doors or {}) do
-                    if door.modelDoor == modelName then
-                        dynamicDoors[id] = GetHashKey(modelName)
                         break
                     end
                 end
