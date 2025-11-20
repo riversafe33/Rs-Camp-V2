@@ -75,36 +75,6 @@ local function isChestObject(model)
     return false
 end
 
-local function loadModelHash(modelName)
-    local modelHash = GetHashKey(modelName)
-    if not IsModelInCdimage(modelHash) or not IsModelValid(modelHash) then
-        return nil
-    end
-
-    RequestModel(modelHash)
-    local timeout = 0
-    while not HasModelLoaded(modelHash) and timeout < 5000 do
-        Wait(10)
-        timeout = timeout + 10
-    end
-
-    if not HasModelLoaded(modelHash) then
-        return nil
-    end
-
-    Wait(50)
-    return modelHash
-end
-
-local function safeCreateObject(modelHash, x, y, z)
-    local obj = CreateObject(modelHash, 0.0, 0.0, 0.0, true, true, true)
-    if not DoesEntityExist(obj) or obj == 0 then
-        return nil
-    end
-    SetEntityCoordsNoOffset(obj, x, y, z, false, false, false)
-    return obj
-end
-
 local AllVegetation = 1+2+4+8+16+32+64+128+256
 local VMT_Cull = 1+2+4+8+16+32
 
@@ -134,8 +104,8 @@ CreateThread(function()
             local dist = #(playerCoords - pos)
 
             if dist < renderDistance and not campsEntities[id] then
-                local modelHash = loadModelHash(data.item.model)
-                local object = safeCreateObject(modelHash, data.x, data.y, data.z)
+                local modelHash = GetHashKey(data.item.model)
+                local object = CreateObjectNoOffset(modelHash, data.x, data.y, data.z, true, true, true)
 
                 SetEntityRotation(object,
                     tonumber(data.rotation.x or 0.0) % 360.0,
@@ -189,7 +159,6 @@ CreateThread(function()
         Wait(1000)
     end
 end)
-
 
 RegisterNetEvent('rs_camp:client:removeCamp')
 AddEventHandler('rs_camp:client:removeCamp', function(uniqueId)
@@ -405,13 +374,13 @@ AddEventHandler('rs_camp:client:placePropCamp', function(itemName)
     if not Config.Items[itemName] then return end
 
     local modelName = Config.Items[itemName].model
-    local modelHash = loadModelHash(modelName)
+    local modelHash = GetHashKey(modelName)
     if not modelHash then return end
 
     local playerPed = PlayerPedId()
     local ox, oy, oz = table.unpack(GetOffsetFromEntityInWorldCoords(playerPed, 0.0, 4.0, 0.0))
 
-    local tempObj = safeCreateObject(modelHash, ox, oy, oz)
+    local tempObj = CreateObject(modelHash, ox, oy, oz, true, true, true)
     if not tempObj then return end
 
     local dynamicRadius = GetModelRadius(modelHash)
@@ -457,7 +426,6 @@ AddEventHandler('rs_camp:client:placePropCamp', function(itemName)
             if IsDisabledControlJustPressed(0, Config.Keys.moveRight) then posX = posX + posStep; moved = true end
             if IsDisabledControlJustPressed(0, Config.Keys.moveUp) then posZ = posZ + posStep; moved = true end
             if IsDisabledControlJustPressed(0, Config.Keys.moveDown) then posZ = posZ - posStep; moved = true end
-
             if IsDisabledControlJustPressed(0, Config.Keys.rotateRightZ) then rotZ = rotZ + rotStep; moved = true end
             if IsDisabledControlJustPressed(0, Config.Keys.rotateLeftZ) then rotZ = rotZ - rotStep; moved = true end
             if IsDisabledControlJustPressed(0, Config.Keys.rotateUpX) then rotX = rotX + rotStep; moved = true end
@@ -484,6 +452,7 @@ AddEventHandler('rs_camp:client:placePropCamp', function(itemName)
                     speed = Config.Text.SpeedLabel .. ": " .. string.format("%.2f", posStep)
                 })
             end
+            
             if IsDisabledControlJustPressed(0, Config.Keys.decreaseSpeed) then
                 posStep = math.max(posStep - 0.01, 0.01)
                 rotStep = posStep * 10
